@@ -1,7 +1,6 @@
 type navbarListType = {
         title: string,
         url: string,
-        icon: string,
         subnav: [] | {
                title: string,
                url: string
@@ -11,17 +10,16 @@ type navbarListType = {
 
 export const navbarList: navbarListType = [
     {
-        "title": "Blogs",
+        "title": "Blog",
         "url": "#",
-        "icon": "",
         "subnav": [
             {
-                "title": "Blogs",
-                "url": "/admin/blogs",
+                "title": "Posts",
+                "url": "/admin/posts",
             },
             {
                 "title": "Categories",
-                "url": "/admin/blogs-cat",
+                "url": "/admin/post-cat",
             }
         ]
 
@@ -29,7 +27,6 @@ export const navbarList: navbarListType = [
     {
         "title": "Users",
         "url": "/admin/user",
-        "icon": "",
         "subnav": []
     }
 

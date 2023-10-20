@@ -4,6 +4,8 @@
 First, run the development server:
 
 ```bash
+npm install
+#then
 npx prisma db push 
 #then 
 npm run dev
