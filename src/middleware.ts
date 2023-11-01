@@ -3,5 +3,6 @@ export const config = {
   matcher: [
     "/admin", 
     "/admin/:path*",
+    "/api/postcat"
   ],
 };
