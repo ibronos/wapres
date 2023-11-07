@@ -25,9 +25,10 @@ model Post {
   title     String
   content   String?
   published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  authorId  Int
-  categories Post_Category[]
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId  Int?
+  categories Post_Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId Int?
 }
 
 model Post_Category {
