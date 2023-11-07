@@ -2,12 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import axios from "axios";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import AddDataAdminButton from "@/app/components/AddDataAdminButton";
 import Link from "next/link";
 
 const Index = () =>  {
 
+    const router = useRouter();
     const pathname = usePathname();
     const [totalPagination, setTotalPagination] = useState(0);
     const [items, setItems] = useState([]);
@@ -42,6 +43,24 @@ const Index = () =>  {
     const handleSearch = (event:any) => {
         event.preventDefault();
         setRefreshData(!refreshData)
+    };
+
+    const handleDelete = async (id: number, name: string) => {
+        if (confirm(`Are you sure want to delete ${name}?`) == true) {
+            await axios.delete(`/api/postcat/${id}`).then(() => {
+                alert('deleted successfully');
+                router.refresh();
+                setRefreshData(!refreshData);
+              })
+              .catch((error) => {
+                throw new Error(error)
+              })
+              .finally(() => {
+              });
+          } else {
+            router.refresh();         
+            setRefreshData(!refreshData);
+          }
     };
 
     useEffect(() => {
@@ -121,7 +140,7 @@ const Index = () =>  {
                                                 </span>
                                                 <span className="text">edit</span>
                                             </Link>
-                                            <Link href="#" className="btn btn-sm btn-danger btn-icon-split ml-2">
+                                            <Link href="#" className="btn btn-sm btn-danger btn-icon-split ml-2" onClick={() => handleDelete(item.id, item.name)}>
                                                 <span className="icon text-white-50">
                                                     <i className="fas fa-trash" />
                                                 </span>

@@ -4,7 +4,11 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState, useEffect, SyntheticEvent } from "react";
 
-const AddData = () =>  {
+interface IParams {
+    id:string|number
+}
+
+const UpdateData = ({params} : {params:IParams}) =>  {
 
     const router = useRouter();
     const [name, setName] = useState("");
@@ -15,7 +19,7 @@ const AddData = () =>  {
         e.preventDefault();
         try {
 
-            await axios.post("/api/postcat", {
+            await axios.patch(`/api/postcat/${params.id}`, {
                name: name
             })
             .then(() => {
@@ -34,10 +38,33 @@ const AddData = () =>  {
         }
     };
 
+    const loadData = async() => {
+        try {
+            axios.get(`/api/postcat/${params.id}`)
+            .then(
+                response => {
+                    // console.log(response.data);
+                    setName(response.data.data.name);
+                }
+            )
+            .catch((error) => {
+                throw new Error(error)
+            })
+            .finally(() => {});
+
+        } catch (error:any) {
+            console.error(error.response.data);
+        }
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
     return (
         <div className="container-fluid main-content">
             <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Create Category</h1>
+                <h1 className="h3 mb-0 text-gray-800">Edit Category</h1>
             </div>
 
             <div className={`alert alert-primary alert-dismissible fade ${showAlert ? "show" : "d-none"}`} role="alert">
@@ -72,4 +99,4 @@ const AddData = () =>  {
     );
 }
 
-export default AddData;
+export default UpdateData;

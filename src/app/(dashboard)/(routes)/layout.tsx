@@ -22,7 +22,7 @@ export default function RootLayout({
         <div id="wrapper">
           <Navbar />
           <div id="content-wrapper" className="d-flex flex-column">
-            <div id="content">
+            <div id="content" className="pb-5">
               <Topbar />
               {children}
             </div>
