@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Post_Category } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) =>{
 
-    const body = await request.json();
+    const body:Post_Category = await request.json();
     const all = await prisma.post_Category.create({
         data: {
             name: body.name,
+            slug: body.slug
         }
     });
 

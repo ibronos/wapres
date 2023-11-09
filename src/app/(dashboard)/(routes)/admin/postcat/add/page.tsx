@@ -3,20 +3,29 @@
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState, useEffect, SyntheticEvent } from "react";
+import slugify from 'react-slugify';
 
 const AddData = () =>  {
 
     const router = useRouter();
     const [name, setName] = useState("");
+    const [slug, setSlug] = useState("");
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
+
+    const handleName = (nameParam:string) => {
+        setName(nameParam);
+        // let slugVar = slugify(nameParam);
+        setSlug( slugify(nameParam) );
+    } 
 
     const handleSubmit = async (e: SyntheticEvent) => {    
         e.preventDefault();
         try {
 
             await axios.post("/api/postcat", {
-               name: name
+               name: name,
+               slug: slug
             })
             .then(() => {
                 setShowAlert(true);
@@ -56,7 +65,17 @@ const AddData = () =>  {
                                 type="text"
                                 className="form-control"
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={(e) => handleName(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Slug</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={slug}
+                                onChange={(e) => setSlug(e.target.value)}
                                 required
                             />
                         </div>

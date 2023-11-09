@@ -16,8 +16,9 @@ model User {
   email String  @unique
   name  String?
   password String
-  picture  String?
   posts Post[]
+  image Media? @relation(fields: [image_id], references: [id], onDelete: SetNull)
+  image_id  Int?
 }
 
 model Post {
@@ -25,14 +26,27 @@ model Post {
   title     String
   content   String?
   published Boolean @default(false)
-  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  authorId  Int?
-  categories Post_Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  categoryId Int?
+  author    User?    @relation(fields: [author_id], references: [id], onDelete: SetNull)
+  author_id  Int?
+  categories Post_Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  category_id Int?
+  image Media? @relation(fields: [image_id], references: [id], onDelete: SetNull)
+  image_id  Int?
 }
 
 model Post_Category {
   id    Int    @id @default(autoincrement())
   name  String
+  slug  String @unique
   posts Post[]
+  image Media? @relation(fields: [image_id], references: [id], onDelete: SetNull)
+  image_id Int?
+}
+
+model Media {
+  id    Int    @id @default(autoincrement())
+  name  String
+  post_categories Post_Category[]
+  posts Post[]
+  users User[]
 }

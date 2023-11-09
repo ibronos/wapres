@@ -19,7 +19,7 @@ export const navbarList: navbarListType = [
             },
             {
                 "title": "Categories",
-                "url": "/admin/post-cat",
+                "url": "/admin/postcat",
             }
         ]
 
