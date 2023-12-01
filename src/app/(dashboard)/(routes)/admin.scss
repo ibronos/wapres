@@ -9,3 +9,15 @@ label.nav-link {
 .modal.show {
     display: block;
 }
+
+.image-btn-delete {
+    position: relative;
+}
+
+.custom-file-upload {
+    margin: 0;
+}
+
+.custom-file-upload input[type="file"] {
+    display: none;
+}
