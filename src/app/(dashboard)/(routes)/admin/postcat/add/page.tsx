@@ -5,7 +5,6 @@ import axios from "axios";
 import { useState, useEffect, SyntheticEvent } from "react";
 import slugify from 'react-slugify';
 import Image from 'next/image';
-import SelectFile from "@/app/components/BrowseFile";
 import BrowseFile from "@/app/components/BrowseFile";
 
 const AddData = () =>  {
@@ -20,19 +19,22 @@ const AddData = () =>  {
 
     const handleName = (nameParam:string) => {
         setName(nameParam);
-        // let slugVar = slugify(nameParam);
         setSlug( slugify(nameParam) );
     } 
 
     const handleSubmit = async (e: SyntheticEvent) => {    
         e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("name", name); 
+        formData.append("slug", slug); 
+        formData.append("file", selectedFile);  
+
         try {
 
-            await axios.post("/api/postcat", {
-               name: name,
-               slug: slug,
-               image: image
-            })
+            await axios.post("/api/postcat", 
+                formData
+            )
             .then(() => {
                 setShowAlert(true);
                 setAlertMessage('updated successfully');
@@ -62,9 +64,9 @@ const AddData = () =>  {
                 </button>
             </div>
 
-            <div className="card h-100">
-                <div className="card-body">
-                    <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
+                <div className="card h-100">
+                    <div className="card-body">
                         <div className="form-group">
                             <label>Name</label>
                             <input
@@ -138,7 +140,7 @@ const AddData = () =>  {
                                                 <i className="fas fa-upload fa-sm text-white-50 pr-1" /> 
                                                 Upload
                                             </label>
-                                           
+                                        
                                         </>
                             
                                     )
@@ -146,15 +148,13 @@ const AddData = () =>  {
                             </div>
 
                         </div>
-                      
-                    </form>
+                    </div>
+                    <div className="card-footer">
+                        <a className="btn btn-secondary" onClick={() => router.back()}>Back</a>
+                        <button type="submit" className="btn btn-primary ml-2">Submit</button>
+                    </div>
                 </div>
-                <div className="card-footer">
-                    <a className="btn btn-secondary" onClick={() => router.back()}>Back</a>
-                    <button type="submit" className="btn btn-primary ml-2">Submit</button>
-                </div>
-            </div>
-            
+            </form>
 
 
         </div>

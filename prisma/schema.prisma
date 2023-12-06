@@ -45,7 +45,7 @@ model Post_Category {
 
 model Media {
   id    Int    @id @default(autoincrement())
-  name  String
+  name  String @unique
   post_categories Post_Category[]
   posts Post[]
   users User[]
