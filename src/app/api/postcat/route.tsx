@@ -1,26 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, Post_Category } from "@prisma/client";
+import { upload, getFileByName } from "../upload/route";
 
 const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) =>{
 
-    const body:Post_Category = await request.json();
-    const all = await prisma.post_Category.create({
-        data: {
-            name: body.name,
-            slug: body.slug
-        }
-    });
+    const formData = await request.formData();
+    const file: File | null = formData.get('file') as unknown as File;
+    const name: string | null = formData.get('name') as string;
+    const slug: string | null = formData.get('slug') as string;
+    const imageId = await getImageId(file);
+    const data = await storeData(name, slug, imageId);
 
     return NextResponse.json(
         { 
             success: true,
             message: "",
-            data: all
+            data: data
         }
     );
 
+}
+
+async function getImageId(file: any) {
+    let imageId = null;
+    
+    if(file){
+        const upFile = await upload(file);
+        let uploadStatus = await upFile.json();
+        if(uploadStatus.data.filename){
+            const getImageId = await getFileByName(uploadStatus.data.filename);
+            let getImageIdStatus = await getImageId.json();
+            imageId = getImageIdStatus.data.data.id;
+        }
+    }
+
+    return imageId;
+}
+
+async function storeData(name: string, slug:string, imageId: any) {
+    const all = await prisma.post_Category.create({
+        data: {
+            name: name,
+            slug: slug,
+            image_id: imageId
+        }
+    });
+
+    return all;
 }
 
 export const GET = async (request: NextRequest) => {
