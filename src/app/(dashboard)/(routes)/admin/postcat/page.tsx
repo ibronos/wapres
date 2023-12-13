@@ -134,7 +134,7 @@ const Index = () =>  {
                                         <th scope="row" className="align-middle">{++index}</th>
                                         <td className="align-middle">{item.name}</td>
                                         <td>
-                                            <Link href={pathname + "/" + item.id} className="btn btn-sm btn-info btn-icon-split">
+                                            <Link href={pathname + "/add/?id=" + item.id} className="btn btn-sm btn-info btn-icon-split">
                                                 <span className="icon text-white-50">
                                                     <i className="fas fa-info-circle" />
                                                 </span>
