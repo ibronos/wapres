@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useState, useEffect, SyntheticEvent } from "react";
 import slugify from 'react-slugify';
@@ -10,6 +10,9 @@ import BrowseFile from "@/app/components/BrowseFile";
 const AddData = () =>  {
 
     const router = useRouter();
+    const queryParams = useSearchParams();
+    const id = queryParams.get('id');
+
     const [name, setName] = useState("");
     const [slug, setSlug] = useState("");
     const [image, setImage] = useState("");
@@ -32,9 +35,14 @@ const AddData = () =>  {
 
         try {
 
-            await axios.post("/api/postcat", 
-                formData
-            )
+            const apiMethod = id ? 'patch' : 'post';
+            const apiUrl = id ? `/api/postcat/${id}` : '/api/postcat';
+            
+            await axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: formData
+            })
             .then(() => {
                 setShowAlert(true);
                 setAlertMessage('updated successfully');
@@ -51,10 +59,62 @@ const AddData = () =>  {
         }
     };
 
+    const loadData = async() => {
+        try {
+            axios.get(`/api/postcat/${id}`)
+            .then(
+                response => {
+                    // console.log(response);
+                    if(response.data.data){
+                        setName(response.data.data.name);
+                        setSlug(response.data.data.slug);
+                        if( response.data.data.image_id ){
+                            getFileById(response.data.data.image_id);
+                        }
+                    }
+                }
+            )
+            .catch((error) => {
+                throw new Error(error)
+            })
+            .finally(() => {});
+
+        } catch (error:any) {
+            console.error(error.response.data);
+        }
+    }
+
+    const getFileById = async(id:number) => {
+        try {
+            axios.get(`/api/upload/${id}`)
+            .then(
+                response => {
+                    // console.log(response);
+                    if(response.data.data){
+                        setImage("/upload/"+response.data.data.name);
+                    }
+                }
+            )
+            .catch((error) => {
+                throw new Error(error)
+            })
+            .finally(() => {});
+
+        } catch (error:any) {
+            console.error(error.response.data);
+        }
+    }
+
+    useEffect(() => {
+        if(id) {
+            loadData();
+        }
+    }, []);
+
     return (
         <div className="container-fluid main-content">
             <div className="d-sm-flex align-items-center justify-content-between mb-4">
-                <h1 className="h3 mb-0 text-gray-800">Create Category</h1>
+                <h1 className="h3 mb-0 text-gray-800">{id? 'Update' : 'Create'} Category</h1>
             </div>
 
             <div className={`alert alert-primary alert-dismissible fade ${showAlert ? "show" : "d-none"}`} role="alert">
@@ -151,7 +211,7 @@ const AddData = () =>  {
                     </div>
                     <div className="card-footer">
                         <a className="btn btn-secondary" onClick={() => router.back()}>Back</a>
-                        <button type="submit" className="btn btn-primary ml-2">Submit</button>
+                        <button type="submit" className="btn btn-primary ml-2">{id? 'Update' : 'Submit'}</button>
                     </div>
                 </div>
             </form>
