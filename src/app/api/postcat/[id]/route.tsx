@@ -5,13 +5,20 @@ import type { Post_Category } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const PATCH = async (request: NextRequest, {params}: {params: {id: string}}) =>{
-    const body = await request.json();
+ 
+    const formData = await request.formData();
+    const name: string | null = formData.get('name') as string;
+    const slug: string | null = formData.get('slug') as string;
+    const imageId: string | number | null = formData.get('imageId') as string;
+
     const all = await prisma.post_Category.update({
         where:{
             id: Number(params.id)
         },
-        data:{
-            name: body.name
+        data: {
+            name: name,
+            slug: slug,
+            image_id: Number(imageId)
         }
     });
 
