@@ -9,10 +9,10 @@ export async function POST(request: NextRequest) {
   const data = await request.formData();
   const file: File | null = data.get('file') as unknown as File;
   
-  await upload(file);
+  return await upload(file);
 }
 
-export async function upload(file:any) {
+export async function upload(file:File) {
     
     if (!file) {
       return NextResponse.json({ success: false });
@@ -25,13 +25,13 @@ export async function upload(file:any) {
     filename = filename.toLowerCase();
 
     let fileRename = Date.now().toString() + "_" + rndInt + "-" + filename;
-    const pathFile = path.join(process.cwd(), `/public/upload/${fileRename}`);
+    const pathFile = path.join(process.cwd(), `/public/media/${fileRename}`);
 
     await writeFile(pathFile, buffer)
 
     // console.log(`open ${pathFile} to see the uploaded file`);
 
-    await prisma.media.create({
+    const createData = await prisma.media.create({
         data: {
             name: fileRename
         }
@@ -41,7 +41,7 @@ export async function upload(file:any) {
       success: true,
       message: "",
       data: {
-          filename: fileRename
+          media: createData
       }
     })
 

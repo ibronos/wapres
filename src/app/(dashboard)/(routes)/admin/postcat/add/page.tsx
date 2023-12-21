@@ -15,14 +15,29 @@ const AddData = () =>  {
 
     const [name, setName] = useState("");
     const [slug, setSlug] = useState("");
-    const [image, setImage] = useState("");
-    const [selectedFile, setSelectedFile] = useState<File>();
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
+
+    const [image, setImage] = useState("");
+    const [imageId, setImageId] = useState("");
+
+    const handleMedia = (media: any) => {
+        if(media.id) { 
+            setImageId(media.id); 
+        }
+        if(media.name) {
+            setImage("/media/"+media.name);
+        }
+    };
 
     const handleName = (nameParam:string) => {
         setName(nameParam);
         setSlug( slugify(nameParam) );
+    }
+
+    const removeMedia = () => {
+        setImage("")
+        setImageId("");
     } 
 
     const handleSubmit = async (e: SyntheticEvent) => {    
@@ -31,7 +46,7 @@ const AddData = () =>  {
         const formData = new FormData();
         formData.append("name", name); 
         formData.append("slug", slug); 
-        formData.append("file", selectedFile);  
+        formData.append("imageId", imageId);  
 
         try {
 
@@ -70,6 +85,7 @@ const AddData = () =>  {
                         setSlug(response.data.data.slug);
                         if( response.data.data.image_id ){
                             getFileById(response.data.data.image_id);
+                            setImageId(response.data.data.image_id);
                         }
                     }
                 }
@@ -86,12 +102,12 @@ const AddData = () =>  {
 
     const getFileById = async(id:number) => {
         try {
-            axios.get(`/api/upload/${id}`)
+            axios.get(`/api/media/${id}`)
             .then(
                 response => {
                     // console.log(response);
                     if(response.data.data){
-                        setImage("/upload/"+response.data.data.name);
+                        setImage("/media/"+response.data.data.name);
                     }
                 }
             )
@@ -104,7 +120,7 @@ const AddData = () =>  {
             console.error(error.response.data);
         }
     }
-
+    
     useEffect(() => {
         if(id) {
             loadData();
@@ -171,7 +187,7 @@ const AddData = () =>  {
                                             </div>
 
                                             <div className="card-footer p-2">
-                                                <button className="btn btn-sm btn-danger btn-icon-split ml-2" onClick={() => setImage("")}>
+                                                <button className="btn btn-sm btn-danger btn-icon-split ml-2" onClick={() => removeMedia() }>
                                                     <span className="icon text-white-50">
                                                         <i className="fas fa-trash" />
                                                     </span>
@@ -183,24 +199,7 @@ const AddData = () =>  {
                                     : 
                                     (
                                         <>
-                                            <BrowseFile />
-                                            <span className="px-2">or</span>
-                                            <label className={`custom-file-upload d-sm-inline-block btn btn-sm btn-danger shadow-sm`} >
-                                                <input
-                                                    type="file"
-                                                    name="file"
-                                                    onChange={(e) => {
-                                                        if (e.target.files) {
-                                                            const file = e.target.files[0];
-                                                            setImage(URL.createObjectURL(file));
-                                                            setSelectedFile(file);
-                                                        }
-                                                    }} 
-                                                /> 
-                                                <i className="fas fa-upload fa-sm text-white-50 pr-1" /> 
-                                                Upload
-                                            </label>
-                                        
+                                            <BrowseFile handleMedia={handleMedia} />                                        
                                         </>
                             
                                     )
