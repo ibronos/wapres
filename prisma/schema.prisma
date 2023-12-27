@@ -24,23 +24,32 @@ model User {
 model Post {
   id        Int     @id @default(autoincrement())
   title     String
+  slug      String @unique
   content   String?
-  published Boolean @default(false)
-  author    User?    @relation(fields: [author_id], references: [id], onDelete: SetNull)
+  published Int
+  author    User?   @relation(fields: [author_id], references: [id], onDelete: SetNull)
   author_id  Int?
-  categories Post_Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  category_id Int?
   image Media? @relation(fields: [image_id], references: [id], onDelete: SetNull)
   image_id  Int?
+  categories Categories_On_Posts[] 
 }
 
 model Post_Category {
   id    Int    @id @default(autoincrement())
   name  String
   slug  String @unique
-  posts Post[]
   image Media? @relation(fields: [image_id], references: [id], onDelete: SetNull)
   image_id Int?
+  posts Categories_On_Posts[]
+}
+
+model Categories_On_Posts {
+  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id     Int 
+  category   Post_Category @relation(fields: [category_id], references: [id])
+  category_id Int 
+
+  @@id([post_id, category_id])
 }
 
 model Media {
