@@ -1,28 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient, Post_Category } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) =>{
 
     const formData = await request.formData();
-    const name: string | null = formData.get('name') as string;
+    const title: string | null = formData.get('title') as string;
     const slug: string | null = formData.get('slug') as string;
-    const imageId: string | number | null = formData.get('imageId') as string;
+    const content: string | null = formData.get('content') as string;
+    const published: string | null = formData.get('published') as string;
+    const imageId: string | null = formData.get('imageId') as string;
+    const authorId: string | null = formData.get('authorId') as string;
+    const categories: string | null = formData.get('categories') as string;
 
-    const all = await prisma.post_Category.create({
+    let arrCat = JSON.parse(categories);
+
+    const post = await prisma.post.create({
         data: {
-            name: name,
+            title: title,
             slug: slug,
-            image_id: imageId && Number (imageId) !== 0 ? Number (imageId) : null
+            content: content,
+            published: published == "true" ? 1 : 0,
+            image_id: imageId ? Number(imageId) : null,
+            author_id: Number(authorId)
         }
     });
+
+    const CateoriesOnPost = await prisma.categories_On_Posts.createMany({
+        data: 
+            arrCat.map((id: any) => (
+                {
+                    post_id: post.id,
+                    category_id: id                    
+                }
+            ))                
+        
+    })
 
     return NextResponse.json(
         { 
             success: true,
             message: "",
-            data: all
+            data: post
         }
     );
 
@@ -41,18 +61,19 @@ export const GET = async (request: NextRequest) => {
     const searchVal = searchParams ? searchParams : "";
     const skip = (page - 1) * limit;
 
-    const total = await prisma.post_Category.count();
+    const total = await prisma.post.count();
     const totalPagination = Math.ceil(total/limit);
 
-    const all = await prisma.post_Category.findMany({
+    const all = await prisma.post.findMany({
         skip,
         take: limit,
         select: {
           id: true,
-          name: true
+          title: true,
+          published: true
         },
         where:{
-            name: {
+            title: {
                 contains: searchVal,
             },
         },
