@@ -14,7 +14,10 @@ export const POST = async (request: NextRequest) =>{
     const authorId: string | null = formData.get('authorId') as string;
     const categories: string | null = formData.get('categories') as string;
 
-    let arrCat = JSON.parse(categories);
+    let dataCat:any[] = [];
+    JSON.parse(categories).map((id: any) => {
+        dataCat.push({category_id: id});                    
+    });
 
     const post = await prisma.post.create({
         data: {
@@ -23,20 +26,14 @@ export const POST = async (request: NextRequest) =>{
             content: content,
             published: published == "true" ? 1 : 0,
             image_id: imageId ? Number(imageId) : null,
-            author_id: Number(authorId)
+            author_id: Number(authorId),
+            categories: {
+                createMany: {
+                    data: dataCat
+                }
+            },
         }
     });
-
-    const CateoriesOnPost = await prisma.categories_On_Posts.createMany({
-        data: 
-            arrCat.map((id: any) => (
-                {
-                    post_id: post.id,
-                    category_id: id                    
-                }
-            ))                
-        
-    })
 
     return NextResponse.json(
         { 

@@ -54,11 +54,15 @@ const AddData = () =>  {
 
     const handleCategories = (idParam: string) => {
         let id: number = Number(idParam);
-        if( categories.indexOf(id) !== -1 ) {
-            categories.splice(categories.indexOf(id), 1);
+        const indexOfId = categories.indexOf(id);
+
+        //if category id exist, remove. Otherwise add
+        if( indexOfId > -1 ) { 
+            categories.splice(indexOfId, 1);
         } else {
-            setCategories(prevcategories => [...prevcategories, id]);
+            categories.push(id);
         }
+  
     }
 
     const handleSubmit = async (e: SyntheticEvent) => {    
@@ -69,9 +73,9 @@ const AddData = () =>  {
         formData.append("slug", slug); 
         formData.append("content", content); 
         formData.append("imageId", imageId);  
-        formData.append("authorId", authorId); 
+        formData.append("authorId", String(authorId)); 
         formData.append("categories", JSON.stringify(categories)); 
-        formData.append("published", published);
+        formData.append("published", String(published));
 
         try {
 
@@ -113,11 +117,12 @@ const AddData = () =>  {
                         setContent(response.data.data.content);
                         
                         let cat = response.data.data.categories;
-                        var catF = cat.map(function(val:any) {
-                            // console.log(val);
-                            handleCategories(val.category_id);
+                        let resCat:number[] = [];
+                        cat.map(function(val:any) {
+                            resCat.push( Number(val.category_id) );
                         });
-                        // console.log(response.data.data.content);
+
+                        setCategories(resCat);
 
                         if( response.data.data.image_id ){
                             getFileById(response.data.data.image_id);
@@ -189,7 +194,7 @@ const AddData = () =>  {
             setAuthorId(session?.user?.id);
         };
 
-    }, [published, categories]);
+    }, []);
 
 
     return (
@@ -314,12 +319,12 @@ const AddData = () =>  {
                                                         {listCat.map((item:any, index) => (
                                                             <div className="form-check" key={index}>
                                                                 <input 
-                                                                className="form-check-input" 
-                                                                type="checkbox" 
-                                                                value={item.id} 
-                                                                id={`list`+item.id} 
-                                                                onChange={(e) =>handleCategories(e.target.value)} 
-                                                                defaultChecked={categories.includes(item.id)}
+                                                                    className="form-check-input" 
+                                                                    type="checkbox" 
+                                                                    value={item.id} 
+                                                                    id={`list`+item.id} 
+                                                                    onChange={(e) => handleCategories(e.target.value)} 
+                                                                    defaultChecked={categories.indexOf(item.id) > -1 ? true : false}
                                                                 />
 
                                                                 <label className="form-check-label" htmlFor={`list`+item.id}>
