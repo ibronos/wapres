@@ -9,24 +9,47 @@ export const PATCH = async (request: NextRequest, {params}: {params: {id: string
     const formData = await request.formData();
     const title: string | null = formData.get('title') as string;
     const slug: string | null = formData.get('slug') as string;
-    const imageId: string | number | null = formData.get('imageId') as string;
+    const content: string | null = formData.get('content') as string;
+    const published: string | null = formData.get('published') as string;
+    const imageId: string | null = formData.get('imageId') as string;
+    const authorId: string | null = formData.get('authorId') as string;
+    const categories: string | null = formData.get('categories') as string;
 
-    const all = await prisma.post.update({
+    let dataCat:any[] = [];
+    JSON.parse(categories).map((id: any) => {
+        dataCat.push({category_id: id});                    
+    });
+
+    const deleteOldCat = await prisma.categories_On_Posts.deleteMany({
+        where: {
+            post_id: Number(params.id)
+        },
+    });
+
+    const post = await prisma.post.update({
         where:{
             id: Number(params.id)
         },
         data: {
             title: title,
             slug: slug,
-            image_id: Number(imageId)
+            content: content,
+            published: published == "true" ? 1 : 0,
+            image_id: imageId ? Number(imageId) : null,
+            author_id: Number(authorId),
+            categories: {
+                createMany: {
+                    data: dataCat
+                }
+            },
         }
     });
 
-     return NextResponse.json(
+    return NextResponse.json(
         { 
             success: true,
             message: "",
-            data: all
+            data: post
         }
     );
 }
