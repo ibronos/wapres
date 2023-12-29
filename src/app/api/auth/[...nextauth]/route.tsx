@@ -4,14 +4,17 @@ import axios from "axios";
 
 const handler = NextAuth({
   providers: [
+
     CredentialsProvider({
+
       name: "Credentials",
+
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "Username" },
+        email: { label: "Email", type: "text", placeholder: "Email" },
         password: { label: "Password", type: "password", placeholder: "Password" },
       },
-      async authorize(credentials, req) {
 
+      async authorize(credentials, req) {
         let user;
 
         const res = await axios({
@@ -35,6 +38,7 @@ const handler = NextAuth({
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
       return { ...token, ...user };
@@ -50,6 +54,16 @@ const handler = NextAuth({
       return session;
     },
   },
+
+  pages: {
+    signIn: '/admin-login', // comment to use default nextauthlogin page
+    signOut: '/auth/signout',
+    error: '/auth/error', // Error code passed in query string as ?error=
+    verifyRequest: '/auth/verify-request', // (used for check email message)
+    newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
+  }
+
+
 });
 
 export { handler as GET, handler as POST };
