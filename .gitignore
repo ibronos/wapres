@@ -37,3 +37,6 @@ next-env.d.ts
 
 # prisma
 /prisma/migrations
+
+# CKEditor node modules
+/ckeditor5/node_modules

@@ -7,6 +7,7 @@ import slugify from 'react-slugify';
 import Image from 'next/image';
 import BrowseFile from "@/app/components/BrowseFile";
 import { useSession } from "next-auth/react";
+import dynamic from 'next/dynamic';
 
 const AddData = () =>  {
 
@@ -28,6 +29,10 @@ const AddData = () =>  {
 
     const [image, setImage] = useState("");
     const [imageId, setImageId] = useState("");
+
+    const CustomEditor = dynamic( () => {
+        return import( '@/app/components/custom-editor' );
+      }, { ssr: false } );
 
     const handleMedia = (media: any) => {
         if(media.id) { 
@@ -63,6 +68,10 @@ const AddData = () =>  {
             categories.push(id);
         }
   
+    }
+
+    const handleContent = (dataContent: string) => {
+        setContent(dataContent);
     }
 
     const handleSubmit = async (e: SyntheticEvent) => {    
@@ -192,10 +201,9 @@ const AddData = () =>  {
 
         if (session && session.user) { 
             setAuthorId(session?.user?.id);
-        };
+        }; 
 
-    }, []);
-
+    }, [session]);
 
     return (
         <div className="container-fluid main-content">
@@ -281,12 +289,11 @@ const AddData = () =>  {
                                 </div>
                                 <div className="form-group">
                                     <label>Content</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={content}
-                                        onChange={(e) => setContent(e.target.value)}
+                                    <CustomEditor 
+                                        initialData={content}
+                                        handleCKEditor={handleContent}
                                     />
+
                                 </div>
                             </div>
                             <div className="col-md-3">

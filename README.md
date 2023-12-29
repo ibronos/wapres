@@ -1,10 +1,14 @@
 
 ## Getting Started
 
+Create .env file, copy the value from .env.example
+
 First, run the development server:
 
 ```bash
 npm install
+#then 
+npm install file:./ckeditor5
 #then
 npx prisma db push 
 #then 
