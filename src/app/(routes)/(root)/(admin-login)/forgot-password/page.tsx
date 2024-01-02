@@ -2,36 +2,37 @@
 
 import { useState, SyntheticEvent, useRef } from "react";
 import { useRouter  } from "next/navigation";
-import Link from "next/link";
-import { signIn } from "next-auth/react";
+import axios from "axios";
 
-type Props = {
-    className?: string;
-    callbackUrl?: string;
-    error?: string;
-};
 
-const AdminLogin = (props: Props) => {
+const ForgotPassword = () => {
 
   const router = useRouter();
   const email = useRef("");
-  const password = useRef("");
   const [showAlert, setShowAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
   
-    const res = await signIn("credentials", {
-        email: email.current,
-        password: password.current,
-        redirect: false,
-    });
-  
-    if (!res?.error) {
-        router.push(props.callbackUrl ?? "/admin");
-    } else {
+    const apiMethod = 'post';
+    const apiUrl = '/api/forgot-password';
+    
+    await axios({
+        method: apiMethod,
+        url: apiUrl,
+        data: { email: email.current }
+    })
+    .then( () => {
+        setAlertMsg("Reset link sent!");
+        router.refresh();
+    })
+    .catch((error) => {
+        setAlertMsg(error.response.data.message);
+    })
+    .finally(() => {
         setShowAlert(true);
-    }
+    });
 
   };
 
@@ -41,17 +42,17 @@ const AdminLogin = (props: Props) => {
 
             <div className="card w-50 m-auto">
                 <div className="card-header text-center">
-                    Administrator Login
+                    Reset Password
                 </div>
 
                 <div className="card-body">
 
-                    <div className={`alert alert-danger alert-dismissible fade p-2 ${showAlert ? "show" : "d-none"}`} role="alert">
-                        Login Failed!
+                    <div className={`alert alert-success alert-dismissible fade p-2 ${showAlert ? "show" : "d-none"}`} role="alert">
+                        {alertMsg}
                         <button 
                             type="button" 
                             className="btn ml-auto" 
-                            onClick={() =>setShowAlert(false)}
+                            onClick={() => setShowAlert(false)}
                             style={{
                                 position: "absolute",
                                 right: 0,
@@ -75,17 +76,6 @@ const AdminLogin = (props: Props) => {
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="password">Password</label>
-                            <input
-                                id="password"
-                                type="password"
-                                className="form-control"
-                                onChange={(e) => password.current = e.target.value}
-                                required
-                            />
-                        </div>
-
                         <div className="mt-2">
                             <button type="submit" className="btn btn-primary ml-2">Submit</button>
                         </div>
@@ -94,13 +84,10 @@ const AdminLogin = (props: Props) => {
 
                 </div>
 
-                <div className="card-footer">
-                    <Link href={"/forgot-password"}>forgot password?</Link>
-                </div>
             </div>
 
         </div> 
   );
 };
 
-export default AdminLogin;
+export default ForgotPassword;
