@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcrypt";
+import { sendEmail } from "@/lib/email";
 
 const prisma = new PrismaClient();
 
 export const POST = async (request: NextRequest) =>{
 
     const body = await request.json();
+    const emailFrom = "hello@wapres.id";
 
     const pass = await prisma.password_Reset.findFirst({
         where: {
@@ -14,13 +16,20 @@ export const POST = async (request: NextRequest) =>{
         }
     });
 
-    const all = await prisma.user.update({
+    const user = await prisma.user.update({
         where:{
             id: Number(pass?.user_id)
         },
         data: {
             password: await bcrypt.hash(body.password, 10),
         }
+    });
+
+    await sendEmail({
+        from: emailFrom,
+        to: user.email,
+        subject: "Reset Password",
+        html: '<p>Your password has been changed!</p>'
     });
 
     const deleteResetPass = await prisma.password_Reset.delete({
@@ -33,7 +42,7 @@ export const POST = async (request: NextRequest) =>{
         { 
             success: true,
             message: "",
-            data: all
+            data: user
         }
     );
 
