@@ -59,3 +59,9 @@ model Media {
   posts Post[]
   users User[]
 }
+
+model Password_Reset {
+  user_id  Int @unique
+  token? String @unique
+  expires? BigInt
+}

@@ -1,30 +1,59 @@
 "use client";
 
-import { useState, SyntheticEvent, useRef } from "react";
-import { useRouter  } from "next/navigation";
+import { useState, SyntheticEvent, useRef, useEffect } from "react";
+import { useRouter, useSearchParams  } from "next/navigation";
 import axios from "axios";
 
-
-const ForgotPassword = () => {
+const ForgotPassword = ()  => {
 
   const router = useRouter();
-  const email = useRef("");
+  const password = useRef("");
+  const repeatpassword = useRef("");
   const [showAlert, setShowAlert] = useState(false);
+  const [isLinkExpired, setIsLinkExpired] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
+  const searchParams = useSearchParams(); 
+  const token = searchParams.get('token');
+
+  useEffect(() => {
+    axios.get(`/api/reset-password?token=${token}`)
+    .then((res) => {
+        if(res.data.data) {
+            setIsLinkExpired(res.data.data.isLinkExpired);
+        }
+    })
+
+  }, [token, isLinkExpired]);
+
+  if(isLinkExpired) { 
+    router.push("/404");
+    return null; 
+  }
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+
+    console.log(password);
+    console.log(repeatpassword);
+
+    if(password.current != repeatpassword.current) {
+        setAlertMsg("password does not match!");
+        setShowAlert(true);
+        return;
+    }
   
     const apiMethod = 'post';
-    const apiUrl = '/api/forgot-password';
+    const apiUrl = '/api/reset-password';
     
     await axios({
         method: apiMethod,
         url: apiUrl,
-        data: { email: email.current }
+        data: { 
+            token: token,
+            password: password.current }
     })
     .then( () => {
-        setAlertMsg("Reset link sent!");
+        setAlertMsg("Password Successfully Updated!");
         router.refresh();
     })
     .catch((error) => {
@@ -42,7 +71,7 @@ const ForgotPassword = () => {
 
             <div className="card w-50 m-auto">
                 <div className="card-header text-center">
-                    Forgot Password
+                    Reset Password
                 </div>
 
                 <div className="card-body">
@@ -66,12 +95,22 @@ const ForgotPassword = () => {
 
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="email">Email</label>
+                            <label htmlFor="email">New Password</label>
                             <input
-                                id="email"
-                                type="email"
+                                id="password"
+                                type="password"
                                 className="form-control"
-                                onChange={(e) => email.current = e.target.value}
+                                onChange={(e) => password.current = e.target.value}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="email">Repeat New Password</label>
+                            <input
+                                id="repepatpassword"
+                                type="password"
+                                className="form-control"
+                                onChange={(e) => repeatpassword.current = e.target.value}
                                 required
                             />
                         </div>
