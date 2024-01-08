@@ -28,7 +28,8 @@
     "react": "^18",
     "react-dom": "^18",
     "react-slugify": "^3.0.3",
-    "sass": "^1.69.4"
+    "sass": "^1.69.4",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.1",
@@ -37,6 +38,7 @@
     "@types/nodemailer": "^6.4.14",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^9.0.7",
     "eslint": "^8",
     "eslint-config-next": "13.5.5",
     "prisma": "^5.7.1",
