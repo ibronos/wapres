@@ -44,7 +44,7 @@ export const GET = async (request: NextRequest) => {
     const searchVal = searchParams ? searchParams : "";
     const skip = (page - 1) * limit;
 
-    const total = await prisma.post_Category.count();
+    const total = await prisma.user.count();
     const totalPagination = Math.ceil(total/limit);
 
     const all = await prisma.user.findMany({

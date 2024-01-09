@@ -21,3 +21,19 @@ export const GET = async (request: NextRequest, {params}: {params: {id: string}}
         }
     );
 }
+
+export const DELETE = async (request: NextRequest, {params}: {params: {id: string}}) =>{
+    const all = await prisma.media.delete({
+        where:{
+            id: Number(params.id)
+        }
+    });
+
+    return NextResponse.json(
+        { 
+            success: true,
+            message: "",
+            data: all
+        }
+    );
+}

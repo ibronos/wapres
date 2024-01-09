@@ -25,6 +25,11 @@ export const navbarList: navbarListType = [
 
     },
     {
+        "title": "Media",
+        "url": "/admin/media",
+        "subnav": []
+    },
+    {
         "title": "Users",
         "url": "/admin/user",
         "subnav": []
