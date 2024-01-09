@@ -14,7 +14,7 @@ export const PATCH = async (request: NextRequest, {params}: {params: {id: string
     let passUpdate;
 
     if( password && password != "" ){
-        passUpdate = await bcrypt.hash(password, 10);
+        passUpdate = await bcrypt.hash(password, Number(process.env.PASSWORD_HASH));
     } else {
         const user = await prisma.user.findUnique({
             where: {

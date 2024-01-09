@@ -39,7 +39,7 @@ export const POST = async (request: NextRequest) =>{
         data:{
             email: body.email,
             name: body.name,
-            password: await bcrypt.hash(body.password, 10),
+            password: await bcrypt.hash(body.password, Number(process.env.PASSWORD_HASH)),
         }
     });
 

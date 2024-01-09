@@ -16,7 +16,7 @@ export const POST = async (request: NextRequest) =>{
         data: {
             name: name,
             email: email,
-            password: await bcrypt.hash(password, 10),
+            password: await bcrypt.hash(password, Number(process.env.PASSWORD_HASH)),
             image_id: imageId && Number (imageId) !== 0 ? Number (imageId) : null
         }
     });
