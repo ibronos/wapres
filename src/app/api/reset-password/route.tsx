@@ -9,12 +9,25 @@ export const POST = async (request: NextRequest) =>{
 
     const body = await request.json();
     const emailFrom = "hello@wapres.id";
+    const now = new Date().getTime();
 
     const pass = await prisma.password_Reset.findFirst({
         where: {
             token: String(body.token)
         }
     });
+
+    const isLinkExpired = isExpired( Number(now), Number(pass?.expires) );
+
+    if(isLinkExpired) {
+        return NextResponse.json(
+            { 
+                success: true,
+                message: "Link Expired"
+            },
+            {status: 301}
+        );
+    }
 
     const user = await prisma.user.update({
         where:{
