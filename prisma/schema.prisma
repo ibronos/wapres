@@ -62,6 +62,6 @@ model Media {
 
 model Password_Reset {
   user_id  Int @unique
-  token? String @unique
-  expires? BigInt
+  token String? @unique
+  expires BigInt?
 }
