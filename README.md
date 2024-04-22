@@ -1,3 +1,22 @@
+#  Wapres
+
+A simple project to learn React and Next.js
+
+
+## Tech Stack
+
+**Framework:** Next.js App Router
+
+**Dashboard Admin:** Bootstrap - SB Admin 2
+
+**ORM:** Prisma
+
+**Authentication:** Next-Auth
+
+**Email:** Nodemailer
+
+**Client:** Bootstrap
+
 
 ## Getting Started
 
